@@ -1,0 +1,561 @@
+Script started on Mon Nov  9 17:56:18 2015
+# sh
+# 
+# 
+# cd /usr/src/sys/kern
+# 
+# 
+# ls -lt | head
+total 3084
+-rw-r--r--  1 root  wsrc   6650 Nov  9 17:43 cop4600.c
+-rw-r--r--  1 root  wsrc   6623 Nov  9 13:53 cop4600.c~
+-rw-r--r--  1 root  wsrc  26264 Nov  9 13:25 init_sysent.c
+-rw-r--r--  1 root  wsrc  15511 Nov  9 13:25 syscalls.c
+-rw-r--r--  1 root  wsrc  22148 Nov  9 13:25 syscalls.master
+drwxr-xr-x  2 root  wsrc    512 Mar 29  2004 CVS
+-rw-r--r--  1 root  wsrc  13816 Mar 22  2004 kern_exit.c
+-rw-r--r--  1 root  wsrc  54036 Mar 19  2004 tty.c
+-rw-r--r--  1 root  wsrc  24343 Mar 19  2004 sysv_sem.c
+# 
+# 
+# tail syscalls.master
+                            struct sigaltstack *oss); }
+
+;==========================================================================
+; COP4600 syscalls
+;==========================================================================
+
+;added by Dave Small
+289     STD             { int sys_hello( void ); }
+290     STD             { int sys_showargs( const char *str, int val ); }
+291     STD             { int sys_cipher(char *text, int lkey, int nkey); }
+# 
+# 
+# grep cipher *
+cop4600.c:sys_cipher (struct proc *p, void *v, register_t *retval)
+cop4600.c:  struct sys_cipher_args *args = v;
+cop4600.c~:sys_cipher (struct proc *p, void *v, register_t *retval)
+cop4600.c~:  struct sys_cipher_args *args = v;
+init_sysent.c:  { 3, s(struct sys_cipher_args),
+init_sysent.c:      sys_cipher },                       /* 291 = cipher */
+syscalls.c:     "cipher",                       /* 291 = cipher */
+syscalls.master:291     STD             { int sys_cipher(char *text, int lkey, int nkey); }
+# 
+# 
+# cd ../arch/i386/compile/GENERIC
+# 
+# 
+# grep cipher *
+Binary file blf.o matches
+Binary file cop4600.o matches
+Binary file init_sysent.o matches
+# 
+# 
+# grep "cop4600" Makefile
+OBJS=   cop4600.o \
+CFILES= $S/kern/cop4600.c \
+# 
+# 
+# tail Makefile
+
+uscanner.o: $S/dev/usb/uscanner.c
+        ${NORMAL_C}
+
+usscanner.o: $S/dev/usb/usscanner.c
+        ${NORMAL_C}
+
+if_wi_usb.o: $S/dev/usb/if_wi_usb.c
+        ${NORMAL_C}
+
+# 
+# 
+# cd /root
+# 
+# 
+# gcc -o part4test part4test.c
+# 
+# 
+# ls -lt
+total 12176
+-rw-r--r--  1 root  wheel     2174 Nov  9 17:59 part4.txt
+-rwxr-xr-x  1 root  wheel     7354 Nov  9 17:59 part4test
+-rw-r--r--  1 root  wheel     2287 Nov  9 17:46 part4test.c
+drwxrwxrwx  5 root  wheel      512 Nov  9 16:39 Project
+-rw-r--r--  1 root  wheel     1262 Nov  9 14:11 kerntest.c
+drwx------  2 root  wheel      512 Nov  9 14:04 .vnc
+-rw-------  1 root  wheel      333 Nov  9 14:04 .Xauthority
+-rw-------  1 root  wheel  6124632 Nov  9 12:15 emacs.core
+-rwxr-xr-x  1 root  wheel       70 Nov  9 11:58 vnc
+-rw-------  1 root  wheel    37148 Nov  9 11:52 vi.core
+drwxr-xr-x  2 root  wheel      512 Oct 25 04:55 Desktop
+-rw-r--r--  1 root  wheel       99 Oct 24 08:28 .Xdefaults
+-rw-r--r--  1 root  wheel       55 Oct 24 08:24 #.Xdefaults#
+-rw-r--r--  1 root  wheel       47 Oct 24 08:14 .Xdefaults~
+drwx------  2 root  wheel      512 Jun  9  2006 .ssh
+-rw-r--r--  1 root  wheel      633 Jun  9  2006 .fonts.cache-1
+drwxr-xr-x  3 root  wheel      512 Jun  9  2006 .emacs.d
+-rw-r--r--  1 root  wheel      482 Jun  9  2006 .emacs
+-rw-r--r--  2 root  wheel      769 Jun  9  2006 .cshrc
+-rw-r--r--  2 root  wheel      267 Jun  9  2006 .profile
+-rw-------  1 root  wheel      125 Mar 29  2004 .klogin
+-rw-r--r--  1 root  wheel      335 Mar 29  2004 .login
+# 
+# 
+# ./part4test
+
+---------
+BEGIN TESTING
+---------
+
+************
+PHASE 1 (Encrypt)
+lval: 1   |  nval: 1
+************
+
+String 1: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+Running through ciper...  Complete!
+String 1: DeBcHiFgLmJkPqNoTuRsXyVw      Size: 25
+
+String 2: abcdefghijklmnopqrstuvwxyz
+Running through ciper...  Complete!
+String 2: dEbChIfGlMjKpQnOtUrSxYvW      Size: 25
+
+String 3: 0123456789
+Running through ciper...  Complete!
+String 3: 34127856      Size: 9
+
+String 4: ! @ # $ ^ & * ( ) _ + < > ? : { }
+Running through ciper...  Complete!
+String 4: @ ! $ # & ^ ( * _ ) < + ? > { :       Size: 33
+
+String 5: 
+Running through ciper...  Complete!
+String 5:       Size: 1
+
+String 6: AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
+Running through ciper...  Complete!
+String 6: cCBbeEDdgGFfiIHhkKJjmMLloONnqQPpsSRruUTtwWVvyYXxaAZz  Size: 53
+
+String 7: A1b2C3d4E5 consits of 10 chars
+Running through ciper...  Complete!
+String 7: C3B2E5D4 dF6tjpO pUt21G Ib d  Size: 29
+
+String 8:  ~~ Th1s 15 a b@d <P@$sw0rd> format; Pl3a$e, st0p us1ng th3s3 k1nd 0f tricks!? #security
+Running through ciper...  Complete!
+String 8: ~  ~2tuI6  2C@b <qE tx@$E>1SpS GU;nbM4 qf,b$U1 tvtQ h 2O4tUIl24  1OEUSG ltjd #!?dvtfUzSj      Size: 89
+
+String 9: abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxy
+Running through ciper...  Complete!
+String 9: dEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvW      Size: 1025
+
+************
+PHASE 1 (Decrypt)
+lval: -1   |  nval: -1
+************
+
+String 1: DeBcHiFgLmJkPqNoTuRsXyVw
+Running through ciper...  Complete!
+String 1: ABCDEFGHIJKLMNOPQRSTUVWX      Size: 25
+
+String 2: dEbChIfGlMjKpQnOtUrSxYvW
+Running through ciper...  Complete!
+String 2: abcdefghijklmnopqrstuvwx      Size: 25
+
+String 3: 34127856
+Running through ciper...  Complete!
+String 3: 01234567      Size: 9
+
+String 4: @ ! $ # & ^ ( * _ ) < + ? > { : 
+Running through ciper...  Complete!
+String 4: ! @ # $ ^ & * ( ) _ + < > ? : {       Size: 33
+
+String 5: 
+Running through ciper...  Complete!
+String 5:       Size: 1
+
+String 6: cCBbeEDdgGFfiIHhkKJjmMLloONnqQPpsSRruUTtwWVvyYXxaAZz
+Running through ciper...  Complete!
+String 6: AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz  Size: 53
+
+String 7: C3B2E5D4 dF6tjpO pUt21G Ib d
+Running through ciper...  Complete!
+String 7: A1b2C3d4E5 consits of 10 cha  Size: 29
+
+String 8: ~  ~2tuI6  2C@b <qE tx@$E>1SpS GU;nbM4 qf,b$U1 tvtQ h 2O4tUIl24  1OEUSG ltjd #!?dvtfUzSj
+Running through ciper...  Complete!
+String 8:  ~~ Th1s 15 a b@d <P@$sw0rd> format; Pl3a$e, st0p us1ng th3s3 k1nd 0f tricks!? #security      Size: 89
+
+String 9: dEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvWCdzbGhEfKlIjOpMnStQrWxUvbCYzfGdEjKhInOlMrSpQvWtUzbxYEfCdIjGhMnKlQrOpUvStYzWxdEbChIfGlMjKpQnOtUrSxYvW
+Running through ciper...  Complete!
+String 9: abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwx      Size: 1025
+
+************
+PHASE 2 (Encrypt)
+lval: 0   |  nval: 0
+************
+
+String 1: ABCDEFGHIJKLMNOPQRSTUVWX
+Running through ciper...  Complete!
+String 1: cDaBgHeFkLiJoPmNsTqRwXuV      Size: 25
+
+String 2: abcdefghijklmnopqrstuvwx
+Running through ciper...  Complete!
+String 2: CdAbGhEfKlIjOpMnStQrWxUv      Size: 25
+
+String 3: 01234567
+Running through ciper...  Complete!
+String 3: 23016745      Size: 9
+
+String 4: ! @ # $ ^ & * ( ) _ + < > ? : { 
+Running through ciper...  Complete!
+String 4: @ ! $ # & ^ ( * _ ) < + ? > { :       Size: 33
+
+String 5: 
+Running through ciper...  Complete!
+String 5:       Size: 1
+
+String 6: AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
+Running through ciper...  Complete!
+String 6: BbaADdcCFfeEHhgGJjiILlkKNnmMPpoORrqQTtsSVvuUXxwWZzyY  Size: 53
+
+String 7: A1b2C3d4E5 consits of 10 cha
+Running through ciper...  Complete!
+String 7: b2a1d4c3 Ce5SIOn OtS10f hA C  Size: 29
+
+String 8:  ~~ Th1s 15 a b@d <P@$sw0rd> format; Pl3a$e, st0p us1ng th3s3 k1nd 0f tricks!? #security
+Running through ciper...  Complete!
+String 8: ~  ~1STh5  1b@A <Pd SW@$d>0rOr ft;MAl3 PE,A$t0 SUSp G 1n3SthK13  0ndtrf KSIC #!?CUSEtYrI      Size: 89
+
+String 9: abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwx
+Running through ciper...  Complete!
+String 9: CdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUv      Size: 1025
+
+************
+PHASE 2 (Decrypt)
+lval: 0   |  nval: 0
+************
+
+String 1: cDaBgHeFkLiJoPmNsTqRwXuV
+Running through ciper...  Complete!
+String 1: ABCDEFGHIJKLMNOPQRSTUVWX      Size: 25
+
+String 2: CdAbGhEfKlIjOpMnStQrWxUv
+Running through ciper...  Complete!
+String 2: abcdefghijklmnopqrstuvwx      Size: 25
+
+String 3: 23016745
+Running through ciper...  Complete!
+String 3: 01234567      Size: 9
+
+String 4: @ ! $ # & ^ ( * _ ) < + ? > { : 
+Running through ciper...  Complete!
+String 4: ! @ # $ ^ & * ( ) _ + < > ? : {       Size: 33
+
+String 5: 
+Running through ciper...  Complete!
+String 5:       Size: 1
+
+String 6: BbaADdcCFfeEHhgGJjiILlkKNnmMPpoORrqQTtsSVvuUXxwWZzyY
+Running through ciper...  Complete!
+String 6: AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz  Size: 53
+
+String 7: b2a1d4c3 Ce5SIOn OtS10f hA C
+Running through ciper...  Complete!
+String 7: A1b2C3d4E5 consits of 10 cha  Size: 29
+
+String 8: ~  ~1STh5  1b@A <Pd SW@$d>0rOr ft;MAl3 PE,A$t0 SUSp G 1n3SthK13  0ndtrf KSIC #!?CUSEtYrI
+Running through ciper...  Complete!
+String 8:  ~~ Th1s 15 a b@d <P@$sw0rd> format; Pl3a$e, st0p us1ng th3s3 k1nd 0f tricks!? #security      Size: 89
+
+String 9: CdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUvbCYAfGdEjKhInOlMrSpQvWtUAbxYEfCdIjGhMnKlQrOpUvStYAWxdEbChIfGlMjKpQnOtUrSxYvWCdAbGhEfKlIjOpMnStQrWxUv
+Running through ciper...  Complete!
+String 9: abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwx      Size: 1025
+
+************
+PHASE 3 (Encrypt)
+lval: 2   |  nval: 5
+************
+
+String 1: ABCDEFGHIJKLMNOPQRSTUVWX
+Running through ciper...  Complete!
+String 1: eFcDiJgHmNkLqRoPuVsTyZwX      Size: 25
+
+String 2: abcdefghijklmnopqrstuvwx
+Running through ciper...  Complete!
+String 2: EfCdIjGhMnKlQrOpUvStYzWx      Size: 25
+
+String 3: 01234567
+Running through ciper...  Complete!
+String 3: 78561290      Size: 9
+
+String 4: ! @ # $ ^ & * ( ) _ + < > ? : { 
+Running through ciper...  Complete!
+String 4: @ ! $ # & ^ ( * _ ) < + ? > { :       Size: 33
+
+String 5: 
+Running through ciper...  Complete!
+String 5:       Size: 1
+
+String 6: AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
+Running through ciper...  Complete!
+String 6: DdcCFfeEHhgGJjiILlkKNnmMPpoORrqQTtsSVvuUXxwWZzyYBbaA  Size: 53
+
+String 7: A1b2C3d4E5 consits of 10 cha
+Running through ciper...  Complete!
+String 7: d7c6f9e8 Eg0UKQp QvU65h jC E  Size: 29
+
+String 8:  ~~ Th1s 15 a b@d <P@$sw0rd> format; Pl3a$e, st0p us1ng th3s3 k1nd 0f tricks!? #security
+Running through ciper...  Complete!
+String 8: ~  ~6UVj0  6d@C <Rf UY@$f>5tQt hv;OCn8 RG,C$v5 UWUr I 6p8UvjM68  5pfvth MUKE #!?EWUGvAtK      Size: 89
+
+String 9: abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwx
+Running through ciper...  Complete!
+String 9: EfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWx      Size: 1025
+
+************
+PHASE 3 (Decrypt)
+lval: -2   |  nval: -5
+************
+
+String 1: eFcDiJgHmNkLqRoPuVsTyZwX
+Running through ciper...  Complete!
+String 1: ABCDEFGHIJKLMNOPQRSTUVWX      Size: 25
+
+String 2: EfCdIjGhMnKlQrOpUvStYzWx
+Running through ciper...  Complete!
+String 2: abcdefghijklmnopqrstuvwx      Size: 25
+
+String 3: 78561290
+Running through ciper...  Complete!
+String 3: 01234567      Size: 9
+
+String 4: @ ! $ # & ^ ( * _ ) < + ? > { : 
+Running through ciper...  Complete!
+String 4: ! @ # $ ^ & * ( ) _ + < > ? : {       Size: 33
+
+String 5: 
+Running through ciper...  Complete!
+String 5:       Size: 1
+
+String 6: DdcCFfeEHhgGJjiILlkKNnmMPpoORrqQTtsSVvuUXxwWZzyYBbaA
+Running through ciper...  Complete!
+String 6: AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz  Size: 53
+
+String 7: d7c6f9e8 Eg0UKQp QvU65h jC E
+Running through ciper...  Complete!
+String 7: A1b2C3d4E5 consits of 10 cha  Size: 29
+
+String 8: ~  ~6UVj0  6d@C <Rf UY@$f>5tQt hv;OCn8 RG,C$v5 UWUr I 6p8UvjM68  5pfvth MUKE #!?EWUGvAtK
+Running through ciper...  Complete!
+String 8:  ~~ Th1s 15 a b@d <P@$sw0rd> format; Pl3a$e, st0p us1ng th3s3 k1nd 0f tricks!? #security      Size: 89
+
+String 9: EfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWxdEAChIfGlMjKpQnOtUrSxYvWCdzAGhEfKlIjOpMnStQrWxUvACYzfGdEjKhInOlMrSpQvWtUzAxYEfCdIjGhMnKlQrOpUvStYzWx
+Running through ciper...  Complete!
+String 9: abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwx      Size: 1025
+
+************
+PHASE 4 (Encrypt)
+lval: 1000   |  nval: 1000
+************
+
+String 1: ABCDEFGHIJKLMNOPQRSTUVWX
+Running through ciper...  Complete!
+String 1: oPmNsTqRwXuVaByZeFcDiJgH      Size: 25
+
+String 2: abcdefghijklmnopqrstuvwx
+Running through ciper...  Complete!
+String 2: OpMnStQrWxUvAbYzEfCdIjGh      Size: 25
+
+String 3: 01234567
+Running through ciper...  Complete!
+String 3: 23016745      Size: 9
+
+String 4: ! @ # $ ^ & * ( ) _ + < > ? : { 
+Running through ciper...  Complete!
+String 4: @ ! $ # & ^ ( * _ ) < + ? > { :       Size: 33
+
+String 5: 
+Running through ciper...  Complete!
+String 5:       Size: 1
+
+String 6: AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
+Running through ciper...  Complete!
+String 6: NnmMPpoORrqQTtsSVvuUXxwWZzyYBbaADdcCFfeEHhgGJjiILlkK  Size: 53
+
+String 7: A1b2C3d4E5 consits of 10 cha
+Running through ciper...  Complete!
+String 7: n2m1p4o3 Oq5EUAz AfE10r tM O  Size: 29
+
+String 8:  ~~ Th1s 15 a b@d <P@$sw0rd> format; Pl3a$e, st0p us1ng th3s3 k1nd 0f tricks!? #security
+Running through ciper...  Complete!
+String 8: ~  ~1EFt5  1n@M <Bp EI@$p>0dAd rf;YMx3 BQ,M$f0 EGEb S 1z3EftW13  0zpfdr WEUO #!?OGEQfKdU      Size: 89
+
+String 9: abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwx
+Running through ciper...  Complete!
+String 9: OpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGh      Size: 1025
+
+************
+PHASE 4 (Decrypt)
+lval: -1000   |  nval: -1000
+************
+
+String 1: oPmNsTqRwXuVaByZeFcDiJgH
+Running through ciper...  Complete!
+String 1: ABCDEFGHIJKLMNOPQRSTUVWX      Size: 25
+
+String 2: OpMnStQrWxUvAbYzEfCdIjGh
+Running through ciper...  Complete!
+String 2: abcdefghijklmnopqrstuvwx      Size: 25
+
+String 3: 23016745
+Running through ciper...  Complete!
+String 3: 01234567      Size: 9
+
+String 4: @ ! $ # & ^ ( * _ ) < + ? > { : 
+Running through ciper...  Complete!
+String 4: ! @ # $ ^ & * ( ) _ + < > ? : {       Size: 33
+
+String 5: 
+Running through ciper...  Complete!
+String 5:       Size: 1
+
+String 6: NnmMPpoORrqQTtsSVvuUXxwWZzyYBbaADdcCFfeEHhgGJjiILlkK
+Running through ciper...  Complete!
+String 6: AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz  Size: 53
+
+String 7: n2m1p4o3 Oq5EUAz AfE10r tM O
+Running through ciper...  Complete!
+String 7: A1b2C3d4E5 consits of 10 cha  Size: 29
+
+String 8: ~  ~1EFt5  1n@M <Bp EI@$p>0dAd rf;YMx3 BQ,M$f0 EGEb S 1z3EftW13  0zpfdr WEUO #!?OGEQfKdU
+Running through ciper...  Complete!
+String 8:  ~~ Th1s 15 a b@d <P@$sw0rd> format; Pl3a$e, st0p us1ng th3s3 k1nd 0f tricks!? #security      Size: 89
+
+String 9: OpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGhnOKMrSpQvWtUzAxYdEbChIfGMnjKQrOpUvStYzWxCdAbGhEfKMIjpQnOtUrSxYvWbCzAfGdEjKhIOpMnStQrWxUvAbYzEfCdIjGh
+Running through ciper...  Complete!
+String 9: abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwx      Size: 1025
+
+************
+PHASE 5 (Encrypt)
+lval: -3   |  nval: -10
+************
+
+String 1: ABCDEFGHIJKLMNOPQRSTUVWX
+Running through ciper...  Complete!
+String 1: zAxYdEbChIfGlMjKpQnOtUrS      Size: 25
+
+String 2: abcdefghijklmnopqrstuvwx
+Running through ciper...  Complete!
+String 2: ZaXyDeBcHiFgLmJkPqNoTuRs      Size: 25
+
+String 3: 01234567
+Running through ciper...  Complete!
+String 3: 23016745      Size: 9
+
+String 4: ! @ # $ ^ & * ( ) _ + < > ? : { 
+Running through ciper...  Complete!
+String 4: @ ! $ # & ^ ( * _ ) < + ? > { :       Size: 33
+
+String 5: 
+Running through ciper...  Complete!
+String 5:       Size: 1
+
+String 6: AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
+Running through ciper...  Complete!
+String 6: YyxXAazZCcbBEedDGgfFIihHKkjJMmlLOonNQqpPSsrRUutTWwvV  Size: 53
+
+String 7: A1b2C3d4E5 consits of 10 cha
+Running through ciper...  Complete!
+String 7: y2x1a4z3 Zb5PFLk LqP10c eX Z  Size: 29
+
+String 8:  ~~ Th1s 15 a b@d <P@$sw0rd> format; Pl3a$e, st0p us1ng th3s3 k1nd 0f tricks!? #security
+Running through ciper...  Complete!
+String 8: ~  ~1PQe5  1y@X <Ma PT@$a>0oLo cq;JXi3 MB,X$q0 PRPm D 1k3PqeH13  0kaqoc HPFZ #!?ZRPBqVoF      Size: 89
+
+String 9: abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwx
+Running through ciper...  Complete!
+String 9: ZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRs      Size: 1025
+
+************
+PHASE 5 (Decrypt)
+lval: 3   |  nval: 10
+************
+
+String 1: zAxYdEbChIfGlMjKpQnOtUrS
+Running through ciper...  Complete!
+String 1: ABCDEFGHIJKLMNOPQRSTUVWX      Size: 25
+
+String 2: ZaXyDeBcHiFgLmJkPqNoTuRs
+Running through ciper...  Complete!
+String 2: abcdefghijklmnopqrstuvwx      Size: 25
+
+String 3: 23016745
+Running through ciper...  Complete!
+String 3: 01234567      Size: 9
+
+String 4: @ ! $ # & ^ ( * _ ) < + ? > { : 
+Running through ciper...  Complete!
+String 4: ! @ # $ ^ & * ( ) _ + < > ? : {       Size: 33
+
+String 5: 
+Running through ciper...  Complete!
+String 5:       Size: 1
+
+String 6: YyxXAazZCcbBEedDGgfFIihHKkjJMmlLOonNQqpPSsrRUutTWwvV
+Running through ciper...  Complete!
+String 6: AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz  Size: 53
+
+String 7: y2x1a4z3 Zb5PFLk LqP10c eX Z
+Running through ciper...  Complete!
+String 7: A1b2C3d4E5 consits of 10 cha  Size: 29
+
+String 8: ~  ~1PQe5  1y@X <Ma PT@$a>0oLo cq;JXi3 MB,X$q0 PRPm D 1k3PqeH13  0kaqoc HPFZ #!?ZRPBqVoF
+Running through ciper...  Complete!
+String 8:  ~~ Th1s 15 a b@d <P@$sw0rd> format; Pl3a$e, st0p us1ng th3s3 k1nd 0f tricks!? #security      Size: 89
+
+String 9: ZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRsyZVXcDaBgHeFkLiJoPmNsTqRXyuVBcZaFgDeJkHiNoLmRsPqVXTuaByZeFcDiJgHmNkLqRoPuVsTZaXyDeBcHiFgLmJkPqNoTuRs
+Running through ciper...  Complete!
+String 9: abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwx      Size: 1025
+
+---------
+END TESTING
+---------
+# 
+# 
+# ls -lt /
+total 20080
+drwx------   7 root  wheel      512 Nov  9 17:59 root
+drwxrwxrwt   4 root  wheel      512 Nov  9 17:59 tmp
+drwxr-xr-x   3 root  wheel    19968 Nov  9 17:45 dev
+-rwxr-xr-x   1 root  wsrc   5076113 Nov  9 17:45 bsd
+drwxr-xr-x  18 root  wheel     2048 Oct 24 07:03 etc
+-rw-r--r--   2 root  wheel      769 Jun  9  2006 .cshrc
+-rw-r--r--   2 root  wheel      267 Jun  9  2006 .profile
+-rw-r--r--   1 root  wheel  5075323 Jul  7  2005 bsd.0
+-rw-r--r--   1 root  wheel    42132 Jul 18  2004 boot
+lrwxr-xr-x   1 root  wheel       11 Jul 18  2004 sys -> usr/src/sys
+drwxr-xr-x   2 root  wheel     2048 Mar 29  2004 sbin
+drwxr-xr-x   2 root  wheel     1024 Mar 29  2004 bin
+drwxr-xr-x   2 root  wheel      512 Mar 29  2004 altroot
+drwxr-xr-x   2 root  wheel      512 Mar 29  2004 home
+drwxr-xr-x   2 root  wheel      512 Mar 29  2004 mnt
+drwxr-xr-x   2 root  wheel      512 Mar 29  2004 stand
+drwxr-xr-x  22 root  wheel      512 May 16  2003 var
+drwxr-xr-x  16 root  wheel      512 May 16  2003 usr
+# 
+# 
+# drmes    mesg | head
+d00 rawdev=0xd02
+uhidev0 at uhub0 port 1 configuration 1 interface 0
+uhidev0: VMware VMware Virtual USB Mouse, rev 1.10/1.03, addr 2, iclass 3/1
+ums0 at uhidev0: 7 buttons and Z dir.
+wsmouse1 at ums0 mux 0
+uhub1 at uhub0 port 2
+uhub1: vendor 0x0e0f VMware Virtual USB Hub, class 9/0, rev 1.10/1.00, addr 3
+uhub1: 7 ports with 7 removable, self powered
+ugen0 at uhub1 port 1
+ugen0: VMware Virtual Bluetooth Adapter, rev 2.00/1.00, addr 4
+# 
+# 
+# # 
+Script done on Mon Nov  9 18:00:22 2015
